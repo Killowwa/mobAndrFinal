@@ -1,0 +1,28 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.Project" parent="Theme.Material3.Light">
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <!-- Цвета темы -->
+        <item name="colorPrimary">#6200EE</item>
+        <item name="colorPrimaryVariant">#3700B3</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+
+        <!-- Стиль кнопок -->
+        <item name="android:buttonStyle">@style/MyButtonStyle</item>
+    </style>
+
+    <style name="MyButtonStyle" parent="Widget.Material3.Button">
+        <item name="materialButtonStyle">@style/MyRoundedButton</item>
+    </style>
+
+    <style name="MyRoundedButton" parent="Widget.Material3.Button">
+        <item name="backgroundTint">#6200EE</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="shapeAppearanceOverlay">@style/RoundedCorners</item>
+    </style>
+
+    <style name="RoundedCorners">
+        <item name="cornerSize">16dp</item>
+    </style>
+</resources>
