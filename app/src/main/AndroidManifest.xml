@@ -28,6 +28,11 @@
         <activity android:name=".MainActivity"
                   android:theme="@style/Theme.Project"
             />
+
+        <activity android:name=".ProfileActivity" />
+
+        <activity android:name=".ArchiveActivity" />
+
     </application>
 
 </manifest>

@@ -8,37 +8,43 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/gradient_bg"
+        android:background="#f9f1f7"
         android:orientation="vertical"
         android:padding="16dp">
+
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="#4bb7ff"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
         <CalendarView
             android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            android:background="#B6D9FA" />
 
         <Button
             android:id="@+id/btnAddWorkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Добавить тренировку"
             android:layout_gravity="center"
-            android:padding="8dp" />
+            android:backgroundTint="#4bb7ff"
+            android:padding="8dp"
+            android:text="Добавить тренировку" />
 
         <ListView
             android:id="@+id/listViewTasks"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="#B6D9FA"
+            android:backgroundTint="#B6D9FA"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp" />
+
     </LinearLayout>
 
     <!-- Navigation Drawer -->

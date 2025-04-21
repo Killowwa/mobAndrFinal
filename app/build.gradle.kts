@@ -55,6 +55,11 @@
         implementation("com.google.android.gms:play-services-auth:21.3.0")
         implementation("com.google.android.material:material:1.10.0")
 
+        implementation ("androidx.recyclerview:recyclerview:1.3.1")
+
+        implementation ("androidx.navigation:navigation-fragment-ktx:2.7.5")
+        implementation ("androidx.navigation:navigation-ui-ktx:2.7.5")
+
 
 
     }

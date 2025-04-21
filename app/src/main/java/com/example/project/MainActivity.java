@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.EditText;
@@ -22,19 +23,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -73,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_profile) {
-                Toast.makeText(this, "Профиль: " + FirebaseAuth.getInstance().getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ProfileActivity.class));
             } else if (id == R.id.nav_exit) {
                 new AlertDialog.Builder(this)
                         .setTitle("Выход")
@@ -85,7 +81,10 @@ public class MainActivity extends AppCompatActivity {
                         })
                         .setNegativeButton("Отмена", null)
                         .show();
+            }else if (id == R.id.nav_archive) {
+                startActivity(new Intent(this, ArchiveActivity.class));
             }
+
             drawerLayout.closeDrawers();
             return true;
         });
@@ -101,10 +100,11 @@ public class MainActivity extends AppCompatActivity {
         btnAddWorkout.setOnClickListener(v -> showAddTaskDialog());
 
         listViewTasks = findViewById(R.id.listViewTasks);
-        taskAdapter = new TaskAdapter(this, new ArrayList<>());
+        taskAdapter = new TaskAdapter(this, new ArrayList<>(), selectedDate, userId);
         listViewTasks.setAdapter(taskAdapter);
-        registerForContextMenu(listViewTasks);
 
+
+        registerForContextMenu(listViewTasks);
         listViewTasks.setOnItemLongClickListener((parent, view, position, id) -> {
             selectedPosition = position;
             return false;
@@ -130,79 +130,20 @@ public class MainActivity extends AppCompatActivity {
                         List<String> tasks = (List<String>) documentSnapshot.get("tasks");
                         if (tasks != null) {
                             tasksByDate.put(selectedDate, new ArrayList<>(tasks));
-                            taskAdapter.setTasks(new ArrayList<>(tasks));
+                            taskAdapter = new TaskAdapter(this, new ArrayList<>(tasks), selectedDate, userId);
+                            listViewTasks.setAdapter(taskAdapter);
                         }
                     } else {
-                        taskAdapter.setTasks(new ArrayList<>());
+                        taskAdapter = new TaskAdapter(this, new ArrayList<>(), selectedDate, userId);
+                        listViewTasks.setAdapter(taskAdapter);
                     }
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show()
-                );
-    }
-
-    public class TaskAdapter extends BaseAdapter {
-        private Context context;
-        private List<String> tasks;
-
-        public TaskAdapter(Context context, List<String> tasks) {
-            this.context = context;
-            this.tasks = tasks;
-        }
-
-        public void setTasks(List<String> updatedTasks) {
-            this.tasks = updatedTasks;
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return tasks.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return tasks.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = LayoutInflater.from(context).inflate(R.layout.task_item, parent, false);
-            }
-
-            TextView taskText = convertView.findViewById(R.id.taskText);
-            Button archiveBtn = convertView.findViewById(R.id.btnArchive);
-
-            String task = tasks.get(position);
-            taskText.setText(task);
-
-            if (task.startsWith("✔")) {
-                archiveBtn.setVisibility(View.VISIBLE);
-                archiveBtn.setOnClickListener(v -> {
-                    if (context instanceof MainActivity) {
-                        ((MainActivity) context).archiveTask(task);
-                    }
-                    tasks.remove(position);
-                    notifyDataSetChanged();
-                });
-            } else {
-                archiveBtn.setVisibility(View.GONE);
-            }
-
-            return convertView;
-        }
+                .addOnFailureListener(e -> Toast.makeText(this, "Ошибка загрузки данных", Toast.LENGTH_SHORT).show());
     }
 
 
-    // Диалоговое окно для добавления упражнения с количеством подходов
     private void showAddTaskDialog() {
-            if (selectedDate.isEmpty()) {
+        if (selectedDate.isEmpty()) {
             Toast.makeText(this, "Сначала выберите дату!", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -210,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Добавить упражнение");
 
-        // Создаем контейнер для ввода (две строки: упражнение и количество подходов)
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
 
@@ -242,8 +182,6 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-
-    // Метод для добавления упражнения в список
     private void addTaskToList(String task) {
         ArrayList<String> tasks = tasksByDate.getOrDefault(selectedDate, new ArrayList<>());
         tasks.add(task);
@@ -256,15 +194,11 @@ public class MainActivity extends AppCompatActivity {
                 .document(userId)
                 .collection("workouts")
                 .document(selectedDate)
-                .set(data) // set вместо update, чтобы создать документ, если его нет
+                .set(data)
                 .addOnSuccessListener(aVoid -> updateTaskList())
-                .addOnFailureListener(e ->
-                        Toast.makeText(this, "Ошибка при сохранении", Toast.LENGTH_SHORT).show()
-                );
+                .addOnFailureListener(e -> Toast.makeText(this, "Ошибка при сохранении", Toast.LENGTH_SHORT).show());
     }
 
-
-    // Обработчик верхнего меню
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
@@ -294,7 +228,11 @@ public class MainActivity extends AppCompatActivity {
             if (selectedPosition != -1) {
                 ArrayList<String> tasks = tasksByDate.get(selectedDate);
                 if (tasks != null) {
-                    tasks.set(selectedPosition, "✔ " + tasks.get(selectedPosition));
+                    String currentTask = tasks.get(selectedPosition);
+                    if (!currentTask.startsWith("✔")) {
+                        currentTask = "✔ " + currentTask;
+                        tasks.set(selectedPosition, currentTask);
+                    }
                     tasksByDate.put(selectedDate, tasks);
                     updateTaskList();
 
@@ -315,10 +253,11 @@ public class MainActivity extends AppCompatActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.task_context_menu, menu); // Файл task_context_menu.xml должен быть в res/menu
+        getMenuInflater().inflate(R.menu.task_context_menu, menu);
     }
 
     @Override
@@ -352,8 +291,8 @@ public class MainActivity extends AppCompatActivity {
                 String currentTask = tasks.get(selectedPosition);
                 if (!currentTask.startsWith("✔")) {
                     currentTask = "✔ " + currentTask;
+                    tasks.set(selectedPosition, currentTask);
                 }
-                tasks.set(selectedPosition, currentTask);
                 tasksByDate.put(selectedDate, tasks);
                 updateTaskList();
 
@@ -362,24 +301,14 @@ public class MainActivity extends AppCompatActivity {
                         .collection("workouts")
                         .document(selectedDate)
                         .update("tasks", tasks)
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Задача завершена!", Toast.LENGTH_SHORT).show();
-
-                            new AlertDialog.Builder(this)
-                                    .setTitle("Архивировать тренировку?")
-                                    .setMessage("Вы хотите добавить упражнение в архив?")
-                                    .setPositiveButton("Да", (d, w) -> archiveTask(tasks.get(selectedPosition)))
-                                    .setNegativeButton("Нет", null)
-                                    .show();
-                        })
-                        .addOnFailureListener(e -> Toast.makeText(this, "Ошибка при завершении", Toast.LENGTH_SHORT).show());
+                        .addOnSuccessListener(aVoid -> Toast.makeText(this, "Завершено!", Toast.LENGTH_SHORT).show())
+                        .addOnFailureListener(e -> Toast.makeText(this, "Ошибка при обновлении", Toast.LENGTH_SHORT).show());
             }
             return true;
         } else {
             return super.onContextItemSelected(item);
         }
     }
-
 
     private void showEditTaskDialog() {
         if (selectedPosition == -1) {
@@ -414,21 +343,5 @@ public class MainActivity extends AppCompatActivity {
 
         builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
         builder.show();
-    }
-
-    private void archiveTask(String task) {
-        String archiveDate = selectedDate;
-        Map<String, Object> data = new HashMap<>();
-        data.put("task", task);
-        data.put("date", archiveDate);
-
-        db.collection("users")
-                .document(userId)
-                .collection("archive")
-                .document(archiveDate)
-                .collection("tasks")
-                .add(data)
-                .addOnSuccessListener(docRef -> Toast.makeText(this, "В архив добавлено", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(this, "Ошибка архивации", Toast.LENGTH_SHORT).show());
     }
 }
