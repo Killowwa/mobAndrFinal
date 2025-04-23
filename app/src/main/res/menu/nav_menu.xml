@@ -10,6 +10,11 @@
         android:title="Профиль"
         android:icon="@drawable/ic_profile"/>
     <item
+        android:id="@+id/nav_playlist"
+        android:title="Плейлист"
+        android:icon="@drawable/ic_media_play" />
+
+    <item
         android:id="@+id/nav_archive"
         android:title="Архив"
         android:icon="@drawable/ic_archive" />

@@ -1,0 +1,54 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/inputMusicUrl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Название песни"
+        android:inputType="textUri"
+        android:minHeight="48dp" />
+
+    <Button
+        android:id="@+id/btnAddTrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="#4bb7ff"
+        android:text="Добавить в плейлист" />
+
+    <ListView
+        android:id="@+id/listViewTracks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1"
+        android:background="#B6D9FA" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnStartMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#4E8137"
+            android:text="▶ Старт" />
+
+        <Button
+            android:id="@+id/btnStopMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#620404"
+            android:text="■ Стоп" />
+    </LinearLayout>
+
+</LinearLayout>

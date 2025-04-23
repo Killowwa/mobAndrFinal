@@ -69,6 +69,8 @@ public class ProfileActivity extends AppCompatActivity {
                 finish();
             } else if (id == R.id.nav_archive) {
                 startActivity(new Intent(this, ArchiveActivity.class));
+            }else if (id == R.id.nav_playlist) {
+                startActivity(new Intent(this, PlaylistActivity.class));
             }
             drawerLayout.closeDrawer(GravityCompat.START);
             return true;

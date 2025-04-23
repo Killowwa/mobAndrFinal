@@ -12,7 +12,7 @@
         defaultConfig {
             applicationId = "com.example.project"
             minSdk = 24
-            targetSdk = 35
+            targetSdk = 32
             versionCode = 1
             versionName = "1.0"
 

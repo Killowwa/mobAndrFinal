@@ -14,6 +14,7 @@ import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -22,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import com.google.android.material.navigation.NavigationView;
+import androidx.core.content.ContextCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -83,7 +85,10 @@ public class MainActivity extends AppCompatActivity {
                         .show();
             }else if (id == R.id.nav_archive) {
                 startActivity(new Intent(this, ArchiveActivity.class));
+            }else if (id == R.id.nav_playlist) {
+                startActivity(new Intent(this, PlaylistActivity.class));
             }
+
 
             drawerLayout.closeDrawers();
             return true;
@@ -109,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             selectedPosition = position;
             return false;
         });
+
     }
 
     @Override
